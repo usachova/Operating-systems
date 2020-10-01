@@ -12,9 +12,8 @@ do
 		then ppid=0
 	fi
 	if [[ -z $ns ]]
-		then ART=0
-	else
-		ART=$(echo "scale=6; $ser/$ns" | bc | awk '{ printf "%f", $0 }')
+		then continue;
 	fi
+	ART=$(echo "scale=6; $ser/$ns" | bc | awk '{ printf "%f", $0 }')
 	echo "$pid $ppid $ART"
 done | sort -nk2 | awk '{print "ProcessID="$1" : Parent_ProcessID="$2" : Average_Running_Time="$3}' > ans4
