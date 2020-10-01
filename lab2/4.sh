@@ -1,18 +1,20 @@
 #!/bin/bash
 
-ans=""
-
-for pid in $(ps -A -o pid)
+for dir in $(ps -A -o pid)
 do
-	statf="/proc/"$pid"/status"
-	schf="/proc/"$pid"/sched"
-	ppid=$(grep -Ehsi "ppid:\s(.+)" $statf | grep -o "[0-9]\+")
-	ser=$(grep -Ehsi "se.sum_exec_runtime" $schf | grep -o "[0-9]\+")
-	ns=$(grep -Ehsi "nr_switches" $schf | grep -o "[0-9]\+")
-	ART=$((ser/ns))
-	if [[ -n $ppid ]]
-		then ans=$ans"ProcessID="$pid" : Parent_ProcessID="$ppid" : Average_Running_Time="$ART
+	statf="/proc/"$dir"/status"
+	schf="/proc/"$dir"/sched"
+	pid=$(grep -Ehsi "^Pid:" $statf | awk '{ print $2 }')
+	ppid=$(grep -Ehsi "^PPid:" $statf | awk '{ print $2 }')
+	ser=$(grep -Ehsi "se.sum_exec_runtime" $schf | awk '{ print $3 }')
+	ns=$(grep -Ehsi "nr_switches" $schf | awk '{ print $3 }')
+	if [[ -z $ppid ]]
+		then ppid=0
 	fi
-done
-
-echo "$ans" | sort -t " " -k2 > ans4
+	if [[ -z $ns ]]
+		then ART=0
+	else
+		ART=$(echo "scale=6; $ser/$ns" | bc | awk '{ printf "%f", $0 }')
+	fi
+	echo "$pid $ppid $ART"
+done | sort -nk2 | awk '{print "ProcessID="$1" : Parent_ProcessID="$2" : Average_Running_Time="$3}' > ans4
