@@ -2,7 +2,7 @@
 
 com="+"
 ans=1
-tail -f pipe |
+( tail -f pipe & echo $! >$3 ) 3>pid |
 while true
 do
 	read str
@@ -16,7 +16,7 @@ do
 			echo "$str"
 		;;
 		"QUIT")
-			killall tail
+			kill $(<pid)
 			exit 0
 		;;
 		[0-9]*)
@@ -32,7 +32,7 @@ do
 			esac
 		;;
 		*)
-			killall tail
+			kill $(<pid)
 			echo "error!"
 			exit 1
 		;;
