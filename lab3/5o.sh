@@ -19,15 +19,15 @@ do
 			killall tail
 			exit 0
 		;;
-		[0-9])
+		[0-9]*)
 			case $com in
 				"+")
-					res=$(($res + $str))
-					echo "$res"
+					ans=$(($ans + $str))
+					echo "$ans"
 				;;
 				"*")
-					res=$(($res * $str))
-					echo "$res"
+					ans=$(($ans * $str))
+					echo "$ans"
 				;;
 			esac
 		;;

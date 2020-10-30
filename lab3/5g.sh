@@ -9,7 +9,7 @@ do
 		echo "finish"
 		exit 0
 	fi
-	if [[ "$str" != "+" && "$str" != "*" && "$str" != [0-9] ]]
+	if [[ "$str" != "+" && "$str" != "*" && "$str" != [0-9]* ]]
 	then
 		echo "error"
 		exit 1
