@@ -3,13 +3,15 @@
 lastBUdate=$(ls /home | grep -E "^Backup-" | sort -n | tail -1 | sed "s/Backup-//")
 lastBU="/home/Backup-$lastBUdate"
 now=$(date +"%Y-%m-%d")
-diff=$(echo "($(date -d "$now" +"%s") - $(date -d "$lastBUdate" +"%s") / 24 / 60 / 60)" | bc)
+nows=$(date -d $now +"%s")
+lasts=$(date -d $lastBUdate +"%s")
+diff=$(echo "(${nows} - ${lasts}) / 60 / 60 / 24" | bc)
 report=/home/backup-report
 source=/home/source
 
-if [[ $diff > 7 ]] || [[ -z "$lastBUdate" ]]
+if (( $diff > 7 )) || [[ -z "$lastBUdate" ]]
 then
-	mkdir "/home/Backup-$now"
+	mkdir "/home/Backup-${now}"
 	for x in $(ls $source)
 	do
 		cp "$source/$x" "/home/Backup-$now"
@@ -19,11 +21,12 @@ else
 	chs=""
 	for x in $(ls $source)
 	do
-		if [[ -f "$lastBU/$x" ]]
+		if [[ -e "$lastBU/$x" ]]
 		then
-			nowsize=$(wc -c "/home/source/$x" | awk "{ print $1 }")
-			busize=$(wc -c "$lastBU/$x" | awk "{ print $1 }")
-			if (( $(echo "$nowsize - $busize" | bc) != 0 ))
+			nowsize=$(wc -c "/home/source/$x" | awk '{ print $1 }')
+			busize=$(wc -c "$lastBU/$x" | awk '{ print $1 }')
+			sdiff=$(echo "$nowsize - $busize" | bc)
+			if (( $sdiff != 0 ))
 			then
 				mv "$lastBU/$x" "$lastBU/$x.$now"
 				cp "$source/$x" "$lastBU"
@@ -31,7 +34,7 @@ else
 			fi
 		else
 			cp  "$source/$x" "$lastBU"
-			chs="$chs\n\t$x copied"
+			chs="${chs}\n\t${x} copied"
 		fi
 	done
 	chs=$(echo $chs | sed "s/^\n//")
