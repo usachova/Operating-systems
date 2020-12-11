@@ -5,9 +5,10 @@ arr=()
 
 echo "" > report.log
 
+cnt=0
+
 while true
 do
-	cnt=0
 	arr+=(${num[@]})
 	let cnt++
 	if [[ $cnt == 10000 ]]

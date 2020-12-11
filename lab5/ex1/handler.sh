@@ -1,6 +1,6 @@
 #!/bin/bash
 
-./mem.bash$pid1=$!
+./mem.bash&pid1=$!
 echo "TIME MEM VIRT RES SHR CPU FREE SWAP" > tmp
 
 while true
